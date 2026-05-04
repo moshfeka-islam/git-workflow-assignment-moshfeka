@@ -1,0 +1,9 @@
+feature_flags:
+  new_dashboard: false
+  dark_mode: false
+  beta_api: false
+  rate_limiting: true
+
+rollout:
+  new_dashboard_percent: 0
+  beta_api_percent: 0
