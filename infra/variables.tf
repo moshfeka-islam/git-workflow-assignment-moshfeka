@@ -20,3 +20,9 @@ variable "request_timeout" {
   type        = number
   default     = 15
 }
+
+variable "service_name" {
+  description = "Service identifier used in resource tagging"
+  type        = string
+  default     = "platform-service"
+}
