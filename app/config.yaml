@@ -1,5 +1,5 @@
 service:
-  name: platform-service
+  name: infra-platform-service
   version: "2.0.0"
   port: 8080
   environment: production
