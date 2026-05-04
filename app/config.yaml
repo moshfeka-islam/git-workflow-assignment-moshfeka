@@ -1,13 +1,13 @@
 service:
   name: platform-service
-  version: "1.0.0"
+  version: "2.0.0"
   port: 8080
   environment: production
 
 logging:
-  level: info
+  level: warn
   format: json
 
 timeout:
-  request_timeout: 15
-  idle_timeout: 60
+  request_timeout: 30
+  idle_timeout: 90
