@@ -26,3 +26,9 @@ variable "service_name" {
   type        = string
   default     = "platform-service"
 }
+
+variable "enable_monitoring" {
+  description = "Enable CloudWatch monitoring"
+  type        = bool
+  default     = true
+}
