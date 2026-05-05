@@ -7,7 +7,3 @@ feature_flags:
 rollout:
   new_dashboard_percent: 20
   beta_api_percent: 10
-
-staging_overrides:
-  new_dashboard: true
-  beta_api: true
