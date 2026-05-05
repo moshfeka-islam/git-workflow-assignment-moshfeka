@@ -9,5 +9,10 @@ logging:
   format: json
 
 timeout:
+
   request_timeout: 25
   idle_timeout: 60
+
+  request_timeout: 30
+  idle_timeout: 90
+
