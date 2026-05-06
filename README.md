@@ -25,6 +25,8 @@ No real credentials or company code is used.
 ---
 
 ## Repository Structure
+
+```
 git-workflow-assignment-moshfeka/
 ├── README.md
 ├── app/
@@ -43,7 +45,7 @@ git-workflow-assignment-moshfeka/
 │   └── command-log.md            # All commands used with notes
 └── scripts/
     └── validate.sh               # Repo structure validation script
-
+```
 ---
 
 ## Branching Strategy
