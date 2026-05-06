@@ -308,6 +308,11 @@ Always run `git switch -c <branch-name>` before leaving.
 
 ## Final Git Graph
 
+Output of `git --no-pager log --oneline --graph --decorate --all`
+
+<img width="1451" height="417" alt="Git-graph" src="https://github.com/user-attachments/assets/64fe91f7-35f2-489e-81c8-f2f5f80923a0" />
+
+
 ```
 * (HEAD -> main) docs: add conventional commit style guide
 * feat: update service name to infra-platform-service
@@ -337,6 +342,10 @@ feature/rename-service             b5c1743 feat: update service name
 hotfix/prod-timeout                a505bfe fix: increase prod request_timeout
 main                               (HEAD)  docs: add conventional commit style
 release/v1.0                       a505bfe fix: increase prod request_timeout
+
+Output of `git branch -vv`
+
+<img width="1242" height="226" alt="Branch Tracking" src="https://github.com/user-attachments/assets/5af16b6c-f79d-401f-9606-ca9fa5ed9089" />
 
 ---
 
