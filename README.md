@@ -304,6 +304,58 @@ Always run `git switch -c <branch-name>` before leaving.
 - `git push -u origin main` sets upstream tracking
 - Local and remote can diverge — always fetch before merge
 
+
+## Release Tag
+
+A release tag marks a specific commit as a stable release point.
+Tags are permanent labels that never move unlike branch pointers.
+
+### Tags Created
+
+| Tag | Branch | Purpose |
+|-----|--------|---------|
+| `v1.0` | `release/v1.0` | First stable release with prod timeout hotfix |
+| `v1.0.0` | `main` | Final release after all features merged |
+
+### Commands Used
+
+```bash
+# View existing tags
+git tag -l
+
+# Create annotated tag on release branch
+git tag -a v1.0 release/v1.0 -m "Release v1.0 — includes prod timeout hotfix"
+
+# Create annotated tag on main
+git tag -a v1.0.0 -m "Release v1.0.0 — stable release with all features merged"
+
+# View tag details
+git show v1.0
+git show v1.0.0
+
+# Push tags to GitHub
+git push origin v1.0
+git push origin v1.0.0
+
+# List all tags
+git tag -l
+```
+
+### Difference Between Lightweight and Annotated Tags
+
+| | Lightweight | Annotated |
+|--|-------------|-----------|
+| Command | `git tag v1.0` | `git tag -a v1.0 -m "message"` |
+| Has message | No | Yes |
+| Has author | No | Yes |
+| Has date | No | Yes |
+| Recommended for | Temporary | Official releases |
+
+### Why Tags Are Important
+- Mark exact point in history when software was released
+- Unlike branches they never move forward
+- Teams can always checkout `v1.0` to get exact release code
+- Used in CI/CD pipelines to trigger deployments
 ---
 
 ## Final Git Graph
