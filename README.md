@@ -426,5 +426,144 @@ Output of `git branch -vv`
 | `git reset --soft HEAD~1` | Moves HEAD back, keeps changes staged | Local only |
 | `git restore <file>` | Discards unstaged file changes | Yes |
 
-**Rule:** On `main` or any shared branch always use `git revert`.
-Use `git reset` only on local unshared branches.
+## Revert vs Reset vs Restore
+
+These three commands all undo things but in very different ways.
+
+### 1. git revert — Safest
+
+Creates a new commit that undoes a previous commit.
+Original commit stays in history.
+Always safe on shared branches.
+
+**Example done in this assignment:**
+```bash
+# Made a test commit
+echo "this line will be reverted" >> docs/git-notes.md
+git add docs/git-notes.md
+git commit -m "test: temporary commit to demonstrate revert"
+# SHA: 59897c8
+
+# Reverted it safely
+git revert 59897c8
+
+# Result in log:
+# f941536 Revert "test: temporary commit to demonstrate revert"
+# 59897c8 test: temporary commit to demonstrate revert
+# Both commits exist — history fully preserved
+```
+
+**When to use:**
+- On `main` or any shared branch
+- When you want to undo a commit but keep history
+- In production environments
+
+<img width="895" height="146" alt="Revert" src="https://github.com/user-attachments/assets/50790690-801e-4b40-8f2f-42db68eac180" />
+
+
+---
+
+### 2. git reset — Dangerous
+
+Moves HEAD backward and removes commits.
+Never use on shared branches.
+
+**Two types:**
+
+**Soft reset** — removes commit but keeps changes staged:
+```bash
+# Made a test commit
+echo "reset test line" >> docs/git-notes.md
+git commit -am "test: commit to demonstrate reset"
+
+# Soft reset — commit gone but changes still staged
+git reset --soft HEAD~1
+git status
+# Changes to be committed:
+#   modified: docs/git-notes.md
+```
+
+<img width="1010" height="355" alt="Reset" src="https://github.com/user-attachments/assets/991fdc80-df3f-4927-b201-72bf01200438" />
+
+
+**Hard reset** — removes commit AND changes permanently:
+```bash
+# Hard reset — everything gone
+git reset --hard HEAD~1
+git status
+# nothing to commit, working tree clean
+```
+
+**When to use:**
+- Only on your own local branches
+- Never on main or shared branches
+- Soft reset when you want to redo commit message
+- Hard reset when you want to completely undo local work
+
+---
+
+<img width="1037" height="287" alt="Reset Hard" src="https://github.com/user-attachments/assets/5f2f2894-a8f2-4b4c-9f9f-eba5ef86c5ac" />
+
+
+### 3. git restore — File Level Only
+
+Discards unstaged changes to a specific file.
+Does not touch commits at all.
+
+**Example:**
+```bash
+# Made a change but did NOT commit
+echo "this will be discarded" >> docs/git-notes.md
+git status
+# Changes not staged for commit:
+#   modified: docs/git-notes.md
+
+# Restore — discard the change
+git restore docs/git-notes.md
+git status
+# nothing to commit, working tree clean
+```
+
+<img width="911" height="372" alt="Git restore" src="https://github.com/user-attachments/assets/8b78e84b-faae-4621-8773-c4a50a004853" />
+
+
+**Unstage a file:**
+```bash
+# Staged a file by mistake
+git add docs/git-notes.md
+
+# Unstage it without losing changes
+git restore --staged docs/git-notes.md
+git status
+# Changes not staged for commit:
+#   modified: docs/git-notes.md
+```
+
+**When to use:**
+- When you made changes to a file but want to discard them
+- When you staged a file by mistake
+- Always safe — does not affect commits
+
+---
+
+### Comparison Table
+
+| Command | Removes commit | Removes file changes | Safe on shared branch |
+|---------|---------------|---------------------|----------------------|
+| `git revert <sha>` | No — adds new commit | No — kept in new commit | ✅ Always |
+| `git reset --soft HEAD~1` | Yes | No — kept staged | ❌ Local only |
+| `git reset --hard HEAD~1` | Yes | Yes — permanently deleted | ❌ Never |
+| `git restore <file>` | No | Yes — unstaged changes | ✅ Always |
+| `git restore --staged <file>` | No | No — just unstages | ✅ Always |
+
+---
+
+### Golden Rule
+
+```
+On main or shared branch  → git revert
+Undo local commit, keep changes → git reset --soft
+Undo local commit, delete changes → git reset --hard
+Discard unstaged file changes → git restore <file>
+Unstage a file → git restore --staged <file>
+```
