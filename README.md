@@ -1,30 +1,30 @@
-# git-workflow-assignment-moshfeka
+git-workflow-assignment-moshfeka
 
 **Author:** Moshfeka Islam  
-**Role:** DevOps Engineer  
+**Role:** DevOps Engineer, BJIT Group  
 **Assignment:** Git Workflow — Branching, Conflicts, Cherry-pick, Rebase, HEAD  
-**Date:** 2026-05-04
+**Date:** 2026-05-06
 
 ---
 
 ## Project Purpose
 
-This repository simulates a realistic infrastructure team Git workflow. It covers:
+This repository simulates a realistic infrastructure team Git workflow.
+It demonstrates daily Git skills used in production DevOps teams including:
 - Branch creation and management
 - Real merge conflict creation and resolution
 - Remote/origin tracking
-- Cherry-picking a hotfix commit
+- Cherry-picking a hotfix commit into a release branch
 - Rebasing a feature branch on main
 - HEAD and detached HEAD demonstration
 - Readable commit history using conventional commits
 
-All files are Terraform-style config files and YAML — no real credentials or company code.
+All files are Terraform-style config files and YAML.
+No real credentials or company code is used.
 
 ---
 
 ## Repository Structure
-
-```
 git-workflow-assignment-moshfeka/
 ├── README.md
 ├── app/
@@ -39,11 +39,10 @@ git-workflow-assignment-moshfeka/
 │       └── prod.tfvars           # Prod environment values
 ├── docs/
 │   ├── git-notes.md              # Key Git concept explanations
-│   ├── conflict-resolution.md    # Conflict evidence and resolution log
+│   ├── conflict-resolution.md    # Conflict evidence and resolution
 │   └── command-log.md            # All commands used with notes
 └── scripts/
     └── validate.sh               # Repo structure validation script
-```
 
 ---
 
@@ -55,149 +54,236 @@ git-workflow-assignment-moshfeka/
 | `feature/add-staging-config` | Staging env config updates | main |
 | `feature/rename-service` | Service rename refactor | main |
 | `hotfix/prod-timeout` | Emergency prod timeout fix | main |
-| `release/v1.0` | Release candidate with hotfix | main + cherry-pick |
-| `experiment/detached-head-demo` | HEAD concept demonstration | old commit (detached HEAD) |
+| `release/v1.0` | Release candidate with hotfix | main |
+| `experiment/detached-head-demo` | HEAD concept demonstration | old commit |
+| `experiment/detached-head-demo-new` | New detached HEAD demo | old commit |
 
 ---
 
 ## Commands Used
 
-See [`docs/command-log.md`](docs/command-log.md) for the full annotated command log.
+See `docs/command-log.md` for full annotated command log.
 
 Key commands used:
-```bash
-git init / git add / git commit
-git checkout -b / git switch -c
-git remote add origin / git push -u origin
-git merge / git rebase
-git cherry-pick <sha>
-git log --oneline --graph --decorate --all
-git reflog --date=relative
-git branch -a / git branch -vv
-git remote -v
-git fetch origin
-git status / git diff / git show
-```
+- `git init` — initialize repository
+- `git checkout -b` — create and switch branch
+- `git remote add origin` — connect to GitHub
+- `git push -u origin` — push and set upstream tracking
+- `git merge` — merge branches
+- `git rebase` — rebase feature branch on main
+- `git cherry-pick` — apply one specific commit
+- `git fetch` — download from remote without applying
+- `git log --oneline --graph --decorate --all` — view branch graph
+- `git reflog` — view HEAD movement history
+- `git branch -vv` — view branches with tracking info
+- `git remote -v` — view remote connections
 
 ---
 
 ## Conflict Created and How It Was Solved
 
-**Location:** `app/config.yaml`
+### Where
+File: `app/config.yaml`
 
-**How it was created:** Both `main` and `feature/add-staging-config` edited the same lines:
+### How Conflict Was Created
+Both `main` and `feature/add-staging-config` edited the same lines:
 - `service.version`
 - `logging.level`
 - `timeout.request_timeout`
 - `environment`
 
-**How it was resolved:**
-```
-<<<<<<< HEAD (feature/add-staging-config)
-  version: "1.1.0"
-=======
-  version: "2.0.0"
->>>>>>> main
+### Conflict Markers
+<<<<<<< HEAD version:"1.1.0" environment:staging level: debug request_timeout:25
+version: "1.1.0"
+environment: staging
+level: debug
+request_timeout: 25
+version: "2.0.0"
+environment: production
+level: warn
+request_timeout: 30
+
+
+main
+
+
+
+### Resolution Decision
+| Field | Feature Branch | Main | Kept | Reason |
+|-------|---------------|------|------|--------|
+| version | 1.1.0 | 2.0.0 | 2.0.0 | Never go backward on version |
+| environment | staging | production | staging | This is staging config branch |
+| logging.level | debug | warn | debug | Staging needs debug logging |
+| request_timeout | 25 | 30 | 25 | Correct value for staging |
+
+### Commands Used
+```bash
+git checkout feature/add-staging-config
+git merge main
+# CONFLICT in app/config.yaml
+# Manually opened file and removed conflict markers
+git add app/config.yaml
+git commit -m "fix: resolve conflict — keep v2.0.0, keep staging env"
+git push
 ```
 
-**Decision:** Accepted `version: "2.0.0"` from main (never go backward on version numbers). Kept `environment: staging` and `logging.level: debug` from the feature branch since this is the staging config branch.
-
-Full evidence in [`docs/conflict-resolution.md`](docs/conflict-resolution.md).
+Full evidence in `docs/conflict-resolution.md`
 
 ---
 
 ## Cherry-pick Explanation
 
-**What it is:** `git cherry-pick <sha>` applies a single commit from one branch onto another without merging the whole branch.
+Cherry-pick copies one specific commit from one branch
+to another without merging the whole branch.
 
-**What was done:**
+### What Was Done
 1. Created `hotfix/prod-timeout` from `main`
-2. Fixed `prod.tfvars` — increased `request_timeout` from 15 to 30
-3. Committed the fix: SHA `a505bfe7c3525087e4f3b9084d0bc5ed323bdb88`
+2. Changed `request_timeout` from 15 to 30 in `prod.tfvars`
+3. Committed — got SHA: `a505bfe`
 4. Created `release/v1.0` from `main`
-5. Cherry-picked the hotfix commit into `release/v1.0`
+5. Cherry-picked only that one commit into release
 
-**Why:** The release branch was not ready to absorb all of main. Cherry-pick allowed the critical timeout fix to reach the release without pulling in unrelated changes.
-
+### Commands Used
 ```bash
-git cherry-pick a505bfe7c3525087e4f3b9084d0bc5ed323bdb88
+git checkout main
+git checkout -b hotfix/prod-timeout
+# edited infra/environments/prod.tfvars
+git commit -am "fix: increase prod request_timeout from 15 to 30"
+git push -u origin hotfix/prod-timeout
+
+git log --oneline -1
+# copied SHA: a505bfe
+
+git checkout main
+git checkout -b release/v1.0
+git cherry-pick a505bfe
+git push -u origin release/v1.0
 ```
+
+### Why Cherry-pick Instead of Merge
+| | Merge | Cherry-pick |
+|--|-------|-------------|
+| What it brings | ALL commits from branch | ONE specific commit |
+| Use case | Full feature integration | Single hotfix or fix |
+| Risk | Brings unrelated changes | Surgical — only what you need |
 
 ---
 
 ## Back-merge Explanation
 
-**What it is:** Merging `main` into a long-running feature branch to keep it current.
+Back-merge means merging `main` INTO a feature branch
+to keep the feature branch updated with latest main changes.
 
-**What was done:** After `main` diverged (with the `fix: update main service config` commit), `main` was merged into `feature/add-staging-config`.
+### What Was Done
+`main` had new commits while `feature/add-staging-config` was being worked on.
+We merged `origin/main` into the feature branch before finalizing the PR.
 
-**Why teams do this:**
-- Reduces final PR merge conflict complexity
-- Catches integration issues early when they are smaller
-- Ensures CI on the feature branch reflects real integration state
-- Makes reviewer's job easier — fewer surprises at merge time
-
+### Commands Used
 ```bash
 git checkout feature/add-staging-config
 git fetch origin
 git merge origin/main
+# Fast-forward — 4 files updated from main
+git push
 ```
+
+### Why Teams Do Back-merge
+- Reduces final PR merge conflict size
+- Catches integration issues early
+- Ensures feature branch has latest changes from main
+- Makes reviewer's job easier
 
 ---
 
 ## Rebase Explanation
 
-**What it is:** `git rebase <branch>` replays your commits on top of another branch's tip, creating a linear history.
+Rebase replays your branch commits on top of latest main.
+Creates linear history with no merge commit.
 
-**What was done:**
-1. Created `feature/rename-service` from `main`
-2. Made 2 commits (rename service, update docs)
-3. `main` received another commit while feature branch existed
-4. Ran `git rebase main` on `feature/rename-service`
-5. Git replayed both feature commits on top of updated main — no merge commit created
+### What Was Done
+1. `feature/rename-service` had 3 commits
+2. `main` got a new commit (`log_retention_days` variable)
+3. Ran `git rebase main` on feature branch
+4. Conflict happened in `app/config.yaml` — resolved manually
+5. Ran `git rebase --continue`
+6. Successfully rebased — linear history achieved
+7. Force pushed because rebase rewrites commit SHAs
 
-**Merge vs Rebase:**
-| Merge | Rebase |
-|-------|--------|
-| Creates merge commit | Linear history, no merge commit |
-| Preserves exact history | Rewrites commit SHAs |
-| Safe on shared branches | Only use on private/local branches |
+### Commands Used
+```bash
+git checkout feature/rename-service
+git rebase main
+# CONFLICT in app/config.yaml
+# Manually resolved — kept infra-platform-service name
+git add app/config.yaml
+git rebase --continue
+# Successfully rebased
+git push origin feature/rename-service --force
+```
 
-**Rule:** Never rebase branches that others are using (e.g., `main`, shared feature branches).
+### Rebase vs Merge
+| | Merge | Rebase |
+|--|-------|--------|
+| Creates merge commit | Yes | No |
+| History | Forked | Linear |
+| Rewrites SHAs | No | Yes |
+| Safe on shared branches | Yes | No |
+| Force push needed | No | Yes |
 
 ---
 
 ## HEAD and Detached HEAD Explanation
 
-### HEAD
-`HEAD` is a pointer to your current position in the repository.
-- Normally: `HEAD → main → <latest commit SHA>`
-- You can verify: `cat .git/HEAD` → shows `ref: refs/heads/main`
+### What is HEAD
+HEAD is a pointer to your current position in the repository.
+- Normal state: `HEAD → main → latest commit`
+- Check it: `cat .git/HEAD` shows `ref: refs/heads/main`
 
-### Branch Pointer
-A branch is just a file in `.git/refs/heads/` containing a commit SHA. When you commit, the branch pointer advances automatically.
+### What is Detached HEAD
+Detached HEAD occurs when HEAD points directly to a commit SHA
+instead of a branch name.
 
-### Detached HEAD
-Occurs when HEAD points directly to a commit SHA instead of a branch name.
-
-**How to enter:**
+### Evidence — What Was Done
 ```bash
-git checkout 17f5767   # an old commit SHA
+# Normal HEAD
+git checkout main
+cat .git/HEAD
+# output: ref: refs/heads/main
+
+# Enter detached HEAD
+git checkout 17f5767
 # HEAD is now detached at 17f5767
+
+git status
+# HEAD detached at 17f5767
+
+cat .git/HEAD
+# output: 17f5767a084664abeb12816e543e6c1b8e3dd713
+
+# Made a commit in detached HEAD
+echo "this is a detached HEAD test" > detached-test.txt
+git add detached-test.txt
+git commit -m "test: commit made in detached HEAD state"
+# commit 238c052 — no branch name next to it
+
+# Saved safely to a branch
+git switch -c experiment/detached-head-demo-new
+
+# Returned to main
+git checkout main
+cat .git/HEAD
+# output: ref: refs/heads/main — back to normal
 ```
 
-**Risk:** Commits made in detached HEAD are not on any branch. Git will garbage-collect them eventually.
+### Risk of Detached HEAD
+Commits made in detached HEAD have no branch.
+Git will garbage collect them eventually.
+Always run `git switch -c <branch-name>` before leaving.
 
-**Safe practice:**
-```bash
-git switch -c experiment/detached-head-demo   # save work to a new branch
-git checkout main                              # return to normal state
-```
-
-### HEAD~1, HEAD~2
-- `HEAD~1` — one commit before HEAD
-- `HEAD~2` — two commits before HEAD
-- `ORIG_HEAD` — set before merges/rebases, used to undo: `git reset --hard ORIG_HEAD`
+### HEAD~1 and HEAD~2
+- `HEAD~1` = one commit before current HEAD
+- `HEAD~2` = two commits before current HEAD
+- `ORIG_HEAD` = where HEAD was before merge/rebase — used to undo
 
 ---
 
@@ -205,78 +291,77 @@ git checkout main                              # return to normal state
 
 | Term | What it is |
 |------|-----------|
-| `origin` | Alias for the remote repository URL (GitHub/GitLab) |
-| `main` | Your local branch — moves with your commits |
-| `origin/main` | Remote-tracking ref — snapshot of what origin had at last `git fetch` |
-| Remote branch | A branch on the remote server; viewed via `git branch -r` |
+| `origin` | Alias for the remote repository URL on GitHub |
+| `main` | Your local branch on your machine |
+| `origin/main` | Remote-tracking ref — GitHub's version of main |
+| Remote branch | Branch on GitHub, seen via `git branch -r` |
 
-**Key behavior:**
+### Key Points
 - `git fetch` updates `origin/main` without touching local `main`
 - `git pull` = `git fetch` + `git merge origin/main`
-- `git push -u origin main` sets up upstream tracking so `git push` works without arguments
+- `git push -u origin main` sets upstream tracking
+- Local and remote can diverge — always fetch before merge
 
 ---
 
 ## Final Git Graph
 
-```
-* ca25ee5 (experiment/detached-head-demo) docs: add comprehensive git-notes
-| * f18193d (feature/rename-service) docs: update git-notes for service rename
-| * fee933b feat: rename service from platform-service to infra-platform-service
-| * 36ae6c4 (HEAD -> main) feat: add service_name variable to infra variables
-| | * a505bfe (release/v1.0, hotfix/prod-timeout) fix: increase prod request_timeout
-| |/
-| | * ab1cd6f (feature/add-staging-config) docs: add conflict resolution evidence
-| | *   30ccb26 fix: resolve merge conflict — keep v2.0.0, staging env, debug logging
-| | |\
-| | |/
-| |/|
-| * | 1b407ce fix: update main service config to version 2.0.0 and production timeouts
-|/ /
-| * 46abaea feat: add staging feature flags and enable new_dashboard for staging
-| * 189728c feat: add staging feature flags
+(HEAD -> main) docs: add conventional commit style guide
+feat: update service name to infra-platform-service
+docs: update git-notes to document service rename rationale
+feat: rename service from platform-service to infra-platform-service
+feat: add log_retention_days variable to infra
+| * (experiment/detached-head-demo-new) test: commit in detached HEAD
+| * (experiment/detached-head-demo) docs: add comprehensive git-notes
 |/
-* 17f5767 feat: initial project structure with app config, infra, and docs
-```
+feat: add enable_monitoring variable to infra
+Merge pull request #1 from feature/add-staging-config
+|
+| * Merge branch main into feature/add-staging-config
+|/
+(tag: v1.0, release/v1.0, hotfix/prod-timeout) fix: increase prod timeout
+feat: initial project structure
+
 
 ---
 
-## Branch Tracking Output
-
-```
-  experiment/detached-head-demo  ca25ee5 docs: add comprehensive git-notes
-  feature/add-staging-config     ab1cd6f docs: add conflict resolution evidence
-  feature/rename-service         f18193d docs: update git-notes for service rename
-  hotfix/prod-timeout            a505bfe fix: increase prod request_timeout
-* main                           36ae6c4 feat: add service_name variable
-  release/v1.0                   a505bfe fix: increase prod request_timeout
-```
+## Branch Tracking
+experiment/detached-head-demo      ca25ee5 docs: add comprehensive git-notes
+experiment/detached-head-demo-new  238c052 test: commit made in detached HEAD
+feature/add-staging-config         9d6a30c feat: add enable_monitoring variable
+feature/rename-service             b5c1743 feat: update service name
+hotfix/prod-timeout                a505bfe fix: increase prod request_timeout
+main                               (HEAD)  docs: add conventional commit style
+release/v1.0                       a505bfe fix: increase prod request_timeout
 
 ---
 
 ## Lessons Learned
 
-1. **Commit atomically** — one logical change per commit makes cherry-pick and revert safe
-2. **Back-merge early** — merging main into feature branches regularly prevents mega-conflicts at PR time
-3. **Never rebase shared branches** — rebase rewrites SHAs; if others have pulled the old SHAs, history diverges badly
-4. **Detached HEAD is not dangerous** if you create a branch before leaving it
-5. **Cherry-pick is surgical** — it copies one commit's diff, not the whole branch; perfect for hotfixes
-6. **`git reflog` is your safety net** — even after bad resets, reflog can recover lost commits
-7. **Conflict resolution requires understanding intent** — reading both sides before choosing is critical
-8. **Use `git fetch` before `git merge`** — always fetch first to get the latest remote state
-9. **Conventional commits** (feat:, fix:, docs:) make `git log` readable and enable changelog automation
-10. **`ORIG_HEAD` saves you** after any rebase or merge — always know you can `git reset --hard ORIG_HEAD`
+1. **Commit atomically** — one logical change per commit makes
+   cherry-pick and revert safe and easy
+2. **Back-merge early and often** — prevents mega-conflicts at PR time
+3. **Never rebase shared branches** — rebase rewrites SHAs and breaks
+   others who have pulled the old SHAs
+4. **Detached HEAD is not dangerous** if you create a branch before leaving
+5. **Cherry-pick is surgical** — copies one commit's diff, not whole branch
+6. **`git reflog` is your safety net** — recovers lost commits after bad resets
+7. **Conflict resolution needs understanding** — read both sides before choosing
+8. **Always `git fetch` before `git merge`** — get latest remote state first
+9. **Conventional commits** make git log readable and enable changelog automation
+10. **`ORIG_HEAD` saves you** after rebase or merge — use
+    `git reset --hard ORIG_HEAD` to undo
 
 ---
 
 ## Revert vs Reset vs Restore
 
-| Command | Effect | Shared Branch Safe? |
-|---------|--------|---------------------|
-| `git revert <sha>` | New commit undoing the change | ✅ Yes |
-| `git reset --hard HEAD~1` | Moves HEAD back, deletes commits | ❌ Never on shared |
-| `git reset --soft HEAD~1` | Moves HEAD back, keeps changes staged | ⚠️ Only local |
-| `git restore <file>` | Discards unstaged file changes | ✅ Local only |
+| Command | Effect | Shared Branch Safe |
+|---------|--------|-------------------|
+| `git revert <sha>` | New commit undoing the change | Yes |
+| `git reset --hard HEAD~1` | Moves HEAD back, deletes commits | Never |
+| `git reset --soft HEAD~1` | Moves HEAD back, keeps changes staged | Local only |
+| `git restore <file>` | Discards unstaged file changes | Yes |
 
-**Rule:** On `main` or any shared branch, always use `revert`. Use `reset` only on local, unshared branches.
-
+**Rule:** On `main` or any shared branch always use `git revert`.
+Use `git reset` only on local unshared branches.
