@@ -1,0 +1,48 @@
+name: Validate Repository Structure
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+      - 'hotfix/**'
+      - 'release/**'
+      - 'experiment/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Check README and Run validate.sh
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check README.md exists
+        run: |
+          if [ -f "README.md" ]; then
+            echo "[OK] README.md exists"
+          else
+            echo "[MISSING] README.md not found"
+            exit 1
+          fi
+
+      - name: Check README.md has content
+        run: |
+          lines=$(wc -l < README.md)
+          echo "README.md has $lines lines"
+          if [ "$lines" -gt 10 ]; then
+            echo "[OK] README.md has sufficient content"
+          else
+            echo "[FAIL] README.md is too short"
+            exit 1
+          fi
+
+      - name: Make validate.sh executable
+        run: chmod +x scripts/validate.sh
+
+      - name: Run validate.sh
+        run: bash scripts/validate.sh
