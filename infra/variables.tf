@@ -20,3 +20,21 @@ variable "request_timeout" {
   type        = number
   default     = 15
 }
+
+variable "service_name" {
+  description = "Service identifier used in resource tagging"
+  type        = string
+  default     = "platform-service"
+}
+
+variable "enable_monitoring" {
+  description = "Enable CloudWatch monitoring"
+  type        = bool
+  default     = true
+}
+
+variable "log_retention_days" {
+  description = "CloudWatch log retention in days"
+  type        = number
+  default     = 30
+}

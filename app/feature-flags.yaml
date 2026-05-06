@@ -1,9 +1,9 @@
 feature_flags:
-  new_dashboard: false
+  new_dashboard: true
   dark_mode: false
-  beta_api: false
+  beta_api: true
   rate_limiting: true
 
 rollout:
-  new_dashboard_percent: 0
-  beta_api_percent: 0
+  new_dashboard_percent: 20
+  beta_api_percent: 10

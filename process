@@ -1,0 +1,18 @@
+git config --global user.name "Moshfeka Islam"
+git config --global user.email "moshfeka.islam@bjitgroup.com"
+git log --oneline
+
+# Add your GitHub repo as origin
+git remote add origin https://github.com/YourUsername/git-workflow-assignment-moshfeka.git
+
+# Verify it was added
+git remote -v
+
+# Push main branch
+git push -u origin main
+
+# Push ALL other branches at once
+git push origin --all
+
+# Push the v1.0 release tag
+git push origin --tags
