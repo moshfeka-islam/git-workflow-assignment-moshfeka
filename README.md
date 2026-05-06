@@ -304,6 +304,7 @@ Always run `git switch -c <branch-name>` before leaving.
 - `git push -u origin main` sets upstream tracking
 - Local and remote can diverge — always fetch before merge
 
+---
 
 ## Release Tag
 
@@ -340,6 +341,10 @@ git push origin v1.0.0
 # List all tags
 git tag -l
 ```
+
+<img width="873" height="138" alt="Release Tag" src="https://github.com/user-attachments/assets/a5a08869-9d83-445e-9a5b-700d46926a18" />
+
+
 
 ### Difference Between Lightweight and Annotated Tags
 
