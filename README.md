@@ -282,7 +282,7 @@ Commits made in detached HEAD have no branch.
 Git will garbage collect them eventually.
 Always run `git switch -c <branch-name>` before leaving.
 
-### HEAD~1 and HEAD~2
+## HEAD`~`1 and HEAD`~`2
 - `HEAD~1` = one commit before current HEAD
 - `HEAD~2` = two commits before current HEAD
 - `ORIG_HEAD` = where HEAD was before merge/rebase — used to undo
@@ -308,21 +308,23 @@ Always run `git switch -c <branch-name>` before leaving.
 
 ## Final Git Graph
 
-(HEAD -> main) docs: add conventional commit style guide
-feat: update service name to infra-platform-service
-docs: update git-notes to document service rename rationale
-feat: rename service from platform-service to infra-platform-service
-feat: add log_retention_days variable to infra
+```
+* (HEAD -> main) docs: add conventional commit style guide
+* feat: update service name to infra-platform-service
+* docs: update git-notes to document service rename rationale
+* feat: rename service from platform-service to infra-platform-service
+* feat: add log_retention_days variable to infra
 | * (experiment/detached-head-demo-new) test: commit in detached HEAD
 | * (experiment/detached-head-demo) docs: add comprehensive git-notes
 |/
-feat: add enable_monitoring variable to infra
-Merge pull request #1 from feature/add-staging-config
-|
+* feat: add enable_monitoring variable to infra
+*   Merge pull request #1 from feature/add-staging-config
+|\
 | * Merge branch main into feature/add-staging-config
 |/
-(tag: v1.0, release/v1.0, hotfix/prod-timeout) fix: increase prod timeout
-feat: initial project structure
+* (tag: v1.0, release/v1.0, hotfix/prod-timeout) fix: increase prod timeout
+* feat: initial project structure
+```
 
 
 ---
