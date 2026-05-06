@@ -1,22 +1,13 @@
 service:
-
-  name: platform-service
-  version: "1.1.0"
-
   name: infra-platform-service
   version: "2.0.0"
-
   port: 8080
-  environment: staging
+  environment: production
 
 logging:
-  level: debug
+  level: warn
   format: json
 
 timeout:
-  request_timeout: 25
-  idle_timeout: 60
-
   request_timeout: 30
   idle_timeout: 90
-
