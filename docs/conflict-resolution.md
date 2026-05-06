@@ -10,34 +10,13 @@ Both `main` and `feature/add-staging-config` modified `app/config.yaml` at the s
 - `environment` field
 
 ### Conflict Markers (Before Resolution)
-```
-service:
-  name: platform-service
-<<<<<<< HEAD
-  version: "1.1.0"
-=======
-  version: "2.0.0"
->>>>>>> main
-  port: 8080
-  environment: staging
+<img width="773" height="473" alt="Conflict" src="https://github.com/user-attachments/assets/282ef907-4fb8-47ae-90ee-f62c4261d299" />
 
-logging:
-<<<<<<< HEAD
-  level: debug
-  format: json
 
-timeout:
-  request_timeout: 25
-  idle_timeout: 60
-=======
-  level: warn
-  format: json
 
-timeout:
-  request_timeout: 30
-  idle_timeout: 90
->>>>>>> main
-```
+
+<img width="1007" height="197" alt="Conflict create" src="https://github.com/user-attachments/assets/5eaee4e0-b602-401f-b55d-704966f291c3" />
+
 
 ### Resolution Decision
 | Field | `HEAD` (feature branch) | `main` | Resolution | Reason |
@@ -73,3 +52,12 @@ git merge main
 git add app/config.yaml
 git commit -m "fix: resolve merge conflict — use v2.0.0 from main, keep staging env and debug logging"
 ```
+
+**PR:** https://github.com/moshfeka-islam/git-workflow-assignment-moshfeka/pull/1
+
+<img width="1297" height="796" alt="PR1" src="https://github.com/user-attachments/assets/a430a760-fb60-4fd4-ada9-6d37763c5075" />
+
+<img width="1777" height="855" alt="PR1-1" src="https://github.com/user-attachments/assets/694bd19c-e960-4abf-b81f-019e52b7d17a" />
+
+
+
