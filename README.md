@@ -335,6 +335,10 @@ Output of `git --no-pager log --oneline --graph --decorate --all`
 ---
 
 ## Branch Tracking
+
+Output of `git branch -vv`
+
+```
 experiment/detached-head-demo      ca25ee5 docs: add comprehensive git-notes
 experiment/detached-head-demo-new  238c052 test: commit made in detached HEAD
 feature/add-staging-config         9d6a30c feat: add enable_monitoring variable
@@ -342,6 +346,7 @@ feature/rename-service             b5c1743 feat: update service name
 hotfix/prod-timeout                a505bfe fix: increase prod request_timeout
 main                               (HEAD)  docs: add conventional commit style
 release/v1.0                       a505bfe fix: increase prod request_timeout
+```
 
 Output of `git branch -vv`
 
