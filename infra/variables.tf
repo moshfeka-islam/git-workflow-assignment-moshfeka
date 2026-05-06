@@ -32,3 +32,9 @@ variable "enable_monitoring" {
   type        = bool
   default     = true
 }
+
+variable "log_retention_days" {
+  description = "CloudWatch log retention in days"
+  type        = number
+  default     = 30
+}
